@@ -39,7 +39,7 @@ The extension provides the most seamless experience by allowing you to select ve
 ### Usage
 
 1. Visit [Quran.com](https://quran.com).
-2. Click the extension icon in your toolbar (or the "Activate Ayah Selector" button if pinned).
+2. Click the "Activate Ayah Selector" button at the right bottom of the Quran.com page.
 3. Click on the Ayah you just finished reading.
 4. The extension will handle the rest!
 
