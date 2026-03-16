@@ -51,11 +51,11 @@ The extension provides the most seamless experience by allowing you to select ve
 
 ## 🌐 Web Version (GitHub Pages)
 
-Located in the `/gh-page` directory, this is a standalone HTML file that can be hosted on GitHub Pages. It’s perfect for updating your progress from mobile or browsers where you can't install extensions.
+Located in the `/docs` directory, this is a standalone HTML file that can be hosted on GitHub Pages. It’s perfect for updating your progress from mobile or browsers where you can't install extensions.
 
 ### Setup
 
-1. Enable GitHub Pages for your fork/repository and point it to the `/gh-page` directory (or just open `gh-page/index.html` locally).
+1. Enable GitHub Pages for your fork/repository and point it to the `/docs` directory (or just open `docs/index.html` locally).
 2. On first visit, enter your **Todoist API Token** and **Task ID**.
 3. These settings are saved in your browser's `localStorage`.
 
