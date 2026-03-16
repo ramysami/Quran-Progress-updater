@@ -1,0 +1,4 @@
+on:
+  push:
+    paths:
+      - 'docs/**' # Only build if files in this folder change
