@@ -17,6 +17,7 @@
   },
   "action": {
     "default_title": "Activate Ayah Selector",
+    "default_popup": "options.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
