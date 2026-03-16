@@ -31,17 +31,6 @@ function restore_options() {
     });
 }
 
-function handleNumericInput(e) {
-    const originalValue = e.target.value;
-    // Convert Arabic digits to Western
-    const converted = originalValue.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
-    // Only allow digits
-    const onlyDigits = converted.replace(/\D/g, '');
-    if (e.target.value !== onlyDigits) {
-        e.target.value = onlyDigits;
-    }
-}
-
 // Clears the stored token and taskId
 function clear_options() {
     chrome.storage.sync.set({
@@ -61,4 +50,3 @@ function clear_options() {
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click', save_options);
 document.getElementById('clear').addEventListener('click', clear_options);
-document.getElementById('taskId').addEventListener('input', handleNumericInput);
