@@ -59,6 +59,10 @@ Located in the `/docs` directory, this is a standalone HTML file that can be hos
 2. On first visit, enter your **Todoist API Token** and **Task ID**.
 3. These settings are saved in your browser's `localStorage`.
 
+### Automatic Deployment
+
+The web version is automatically deployed to GitHub Pages via a GitHub Action. To ensure efficiency, the deployment workflow only triggers when changes are made specifically to the `docs/index.html` file.
+
 ### Usage
 
 1. Enter the **Surah Number** and **Ayah Number**.
