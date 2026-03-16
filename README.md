@@ -1,6 +1,6 @@
 # Quran Progress Updater
 
-A dual-mode tool to help you track your Quran reading progress by integrating [Quran.com](https://quran.com) with [Todoist](https://todoist.com).
+A tool to help you track your Quran reading progress by integrating [Quran.com](https://quran.com) with [Todoist](https://todoist.com).
 
 This repository contains both a **Chrome Extension** for an integrated experience on Quran.com and a **Standalone Web Version** for manual updates from any browser.
 
