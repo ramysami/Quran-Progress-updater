@@ -161,6 +161,13 @@
                 <label for="taskId">Todoist Task ID</label>
                 <input type="text" id="taskId" placeholder="Paste your Task ID">
             </div>
+            <div class="form-group">
+                <label for="language">Language</label>
+                <select id="language" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box;">
+                    <option value="ar">Arabic (العربية)</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
             <button id="save-settings-btn">Save & Continue</button>
             <button id="cancel-settings" class="settings-btn" style="display: none;">Cancel</button>
         </div>
@@ -181,6 +188,7 @@
         const setupSection = document.getElementById('setup-section');
         const tokenInput = document.getElementById('token');
         const taskIdInput = document.getElementById('taskId');
+        const languageSelect = document.getElementById('language');
         const surahInput = document.getElementById('surah');
         const verseInput = document.getElementById('verse');
         const updateBtn = document.getElementById('update-btn');
@@ -192,6 +200,7 @@
         function checkSetup() {
             const token = getSetting('todoistToken');
             const taskId = getSetting('taskId');
+            const language = getSetting('language') || 'ar';
             
             if (!token || !taskId) {
                 mainSection.style.display = 'none';
@@ -207,10 +216,12 @@
         saveSettingsBtn.addEventListener('click', () => {
             const token = tokenInput.value.trim();
             const taskId = taskIdInput.value.trim();
+            const language = languageSelect.value;
             
             if (token && taskId) {
                 setSetting('todoistToken', token);
                 setSetting('taskId', taskId);
+                setSetting('language', language);
                 checkSetup();
             } else {
                 alert("Please fill in both fields.");
@@ -220,6 +231,7 @@
         showSettingsBtn.addEventListener('click', () => {
             tokenInput.value = getSetting('todoistToken') || '';
             taskIdInput.value = getSetting('taskId') || '';
+            languageSelect.value = getSetting('language') || 'ar';
             mainSection.style.display = 'none';
             setupSection.style.display = 'block';
             cancelSettingsBtn.style.display = 'inline-block';

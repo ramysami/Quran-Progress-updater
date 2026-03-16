@@ -2,9 +2,11 @@
 function save_options() {
     var token = document.getElementById('token').value;
     var taskId = document.getElementById('taskId').value;
+    var language = document.getElementById('language').value;
     chrome.storage.sync.set({
         todoistToken: token,
-        todoistTaskId: taskId
+        todoistTaskId: taskId,
+        language: language
     }, function() {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
@@ -20,10 +22,12 @@ function save_options() {
 function restore_options() {
     chrome.storage.sync.get({
         todoistToken: '',
-        todoistTaskId: ''
+        todoistTaskId: '',
+        language: 'ar'
     }, function(items) {
         document.getElementById('token').value = items.todoistToken;
         document.getElementById('taskId').value = items.todoistTaskId;
+        document.getElementById('language').value = items.language;
     });
 }
 

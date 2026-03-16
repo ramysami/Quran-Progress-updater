@@ -188,7 +188,7 @@
         console.log('📌 Processing:', surah, ayah);
         
         // CONFIG
-        chrome.storage.sync.get(['todoistToken', 'todoistTaskId'], async function(result) {
+        chrome.storage.sync.get(['todoistToken', 'todoistTaskId', 'language'], async function(result) {
             if (!result.todoistToken) {
                 showToast("❌ Todoist token not set. Please set it in the extension options.", false);
                 return;
@@ -199,6 +199,7 @@
             }
             const todoistToken = result.todoistToken;
             const taskId = result.todoistTaskId;
+            const language = result.language || 'ar';
 
         try {
             // Disable selection mode immediately
@@ -208,16 +209,22 @@
             // STEP 1: Fetch Quran Data
             showToast("⏳ Fetching Ayah details...", true);
             
-            const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.alafasy`);
+            const edition = language === 'ar' ? 'ar.alafasy' : 'en.sahih';
+            const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${edition}`);
             const quranJson = await quranRes.json();
             const data = quranJson.data;
             
-            const surahName = data.surah.name;
+            const surahName = language === 'ar' ? data.surah.name : data.surah.englishName;
             const pageNumber = data.page;
             const juzNumber = data.juz;
             const ayahText = data.text;
 
-            const formattedComment = `${surahName} (${surah})، آية رقم (${ayah}) صـ(${pageNumber})، الجزء رقم (${juzNumber}) حتي قوله تعالى: ${ayahText}`;
+            let formattedComment;
+            if (language === 'ar') {
+                formattedComment = `${surahName} (${surah})، آية رقم (${ayah}) صـ(${pageNumber})، الجزء رقم (${juzNumber}) حتي قوله تعالى: ${ayahText}`;
+            } else {
+                formattedComment = `Surah ${surahName} (${surah}), Ayah (${ayah}), Page (${pageNumber}), Juz (${juzNumber}) until: ${ayahText}`;
+            }
 
             // STEP 2: Post Comment
             showToast("📝 Updating Todoist...", true);
@@ -235,8 +242,14 @@
             });
 
             // STEP 3: Update Task URL
-            const newUrl = `https://quran.com/ar/${surah}?startingVerse=${ayah}`;
-            const newContent = `[قراءة القرآن الكريم](${newUrl})`;
+            let newUrl, newContent;
+            if (language === 'ar') {
+                newUrl = `https://quran.com/ar/${surah}?startingVerse=${ayah}`;
+                newContent = `[قراءة القرآن الكريم](${newUrl})`;
+            } else {
+                newUrl = `https://quran.com/${surah}?startingVerse=${ayah}`;
+                newContent = `[Reading the Holy Quran](${newUrl})`;
+            }
 
             await fetchWithRetry(`https://api.todoist.com/api/v1/tasks/${taskId}`, {
                 method: 'POST',
