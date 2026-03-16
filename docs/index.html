@@ -139,11 +139,11 @@
         <div id="main-section">
             <div class="form-group">
                 <label for="surah">Surah Number</label>
-                <input type="number" id="surah" placeholder="e.g. 18" min="1" max="114">
+                <input type="text" id="surah" placeholder="e.g. 18" inputmode="numeric">
             </div>
             <div class="form-group">
                 <label for="verse">Verse Number</label>
-                <input type="number" id="verse" placeholder="e.g. 10" min="1">
+                <input type="text" id="verse" placeholder="e.g. 10" inputmode="numeric">
             </div>
             <button id="update-btn">Update Progress</button>
             <div id="status" class="status-msg"></div>
@@ -159,7 +159,7 @@
             </div>
             <div class="form-group">
                 <label for="taskId">Todoist Task ID</label>
-                <input type="text" id="taskId" placeholder="Paste your Task ID">
+                <input type="text" id="taskId" placeholder="Paste your Task ID" inputmode="numeric">
             </div>
             <div class="form-group">
                 <label for="language">Language</label>
@@ -174,6 +174,25 @@
     </div>
 
     <script>
+        // --- NUMERIC HELPERS ---
+        function convertArabicToWestern(str) {
+            return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
+        }
+
+        function handleNumericInput(e) {
+            const originalValue = e.target.value;
+            const converted = convertArabicToWestern(originalValue);
+            // Also filter to only allow digits
+            const onlyDigits = converted.replace(/\D/g, '');
+            if (e.target.value !== onlyDigits) {
+                e.target.value = onlyDigits;
+            }
+        }
+
+        document.getElementById('surah').addEventListener('input', handleNumericInput);
+        document.getElementById('verse').addEventListener('input', handleNumericInput);
+        document.getElementById('taskId').addEventListener('input', handleNumericInput);
+
         // --- PERSISTENCE HELPERS ---
         function setSetting(name, value) {
             localStorage.setItem(name, value);
