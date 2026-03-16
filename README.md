@@ -8,11 +8,15 @@ This repository contains both a **Chrome Extension** for an integrated experienc
 
 - **Integrated Selection (Extension):** Activate "Selection Mode" on Quran.com and click any Ayah to update your progress.
 - **Manual Update (Web):** Use the GitHub Pages version to manually enter Surah and Verse numbers.
+- **Language Selection:** Choose between **Arabic** and **English** for your Todoist updates.
+    - **Arabic (Default):** All metadata and links are in Arabic.
+    - **English:** Metadata and links are in English, but the **Ayah text itself remains in Arabic** for authenticity.
 - **Detailed Metadata:** Automatically fetches Surah name, Page number, and Juz using the [Al Quran Cloud API](https://alquran.cloud/api).
 - **Todoist Automation:**
     - Adds a formatted comment with Ayah details to your tracking task.
     - Updates the task content with a direct link to the specific Ayah on Quran.com.
     - Automatically completes the task if it is due today or overdue.
+- **Quick Access:** Clicking the extension icon in your Chrome toolbar opens the options popup immediately.
 - **Privacy Focused:** Your Todoist API token is stored locally in your browser and is only sent directly to the Todoist API.
 
 ---

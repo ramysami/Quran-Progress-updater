@@ -7,9 +7,12 @@ This is a Chrome browser extension called "Quran Progress Updater". Its purpose 
 When active on `quran.com`, the extension injects a button onto the page. Clicking this button enables a "selection mode." When the user then clicks on a specific Ayah (verse), the extension automatically:
 
 1.  Fetches detailed metadata about the selected Ayah (Surah name, page, Juz) from the `api.alquran.cloud` API.
+    *   **Language Support:** Supports both Arabic and English metadata. In English mode, the metadata and links are in English, but the Ayah text itself remains in Arabic.
 2.  Creates a formatted comment in a specific Todoist task with the Ayah details.
 3.  Updates the Todoist task's content to be a direct link to the selected Ayah on `quran.com`.
 4.  If the task was due, it marks it as complete.
+
+Clicking the extension icon in the Chrome toolbar directly opens the options popup for quick configuration.
 
 ### Technologies Used
 
@@ -33,13 +36,11 @@ To run the extension:
 
 ## Configuration
 
-To use the extension, you need to configure your Todoist credentials.
+To use the extension, you need to configure your Todoist credentials and preferred language.
 
-1.  Go to the extensions page (`chrome://extensions`).
-2.  Find the "Quran Progress Updater" extension and click on "Details".
-3.  Click on "Extension options".
-4.  Enter your **Todoist API Token** and **Task ID** (the ID of the task you want to update).
-5.  Click "Save".
+1.  Click the extension icon in the Chrome toolbar.
+2.  Enter your **Todoist API Token**, **Task ID**, and select your **Language**.
+3.  Click "Save".
 
 ## Development Conventions
 
