@@ -209,15 +209,16 @@
             // STEP 1: Fetch Quran Data
             showToast("⏳ Fetching Ayah details...", true);
             
-            const edition = language === 'ar' ? 'ar.alafasy' : 'en.sahih';
-            const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/${edition}`);
+            // We always fetch the Arabic edition (ar.alafasy) to get the Arabic ayah text.
+            // The metadata (data.surah.englishName) is still available for English formatting.
+            const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/ar.alafasy`);
             const quranJson = await quranRes.json();
             const data = quranJson.data;
             
             const surahName = language === 'ar' ? data.surah.name : data.surah.englishName;
             const pageNumber = data.page;
             const juzNumber = data.juz;
-            const ayahText = data.text;
+            const ayahText = data.text; // This will now always be Arabic
 
             let formattedComment;
             if (language === 'ar') {
