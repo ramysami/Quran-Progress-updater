@@ -277,6 +277,7 @@
             const verse = verseInput.value;
             const token = getSetting('todoistToken');
             const taskId = getSetting('taskId');
+            const language = getSetting('language') || 'ar';
 
             if (!surah || !verse) {
                 showStatus("Please enter both Surah and Verse numbers", "error");
@@ -289,16 +290,22 @@
             try {
                 // STEP 1: Fetch Quran Data
                 showStatus("⏳ Fetching Ayah details...", "loading");
-                const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${verse}/ar.alafasy`);
+                const edition = language === 'ar' ? 'ar.alafasy' : 'en.sahih';
+                const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${verse}/${edition}`);
                 const quranJson = await quranRes.json();
                 const data = quranJson.data;
                 
-                const surahName = data.surah.name;
+                const surahName = language === 'ar' ? data.surah.name : data.surah.englishName;
                 const pageNumber = data.page;
                 const juzNumber = data.juz;
                 const ayahText = data.text;
 
-                const formattedComment = `${surahName} (${surah})، آية رقم (${verse}) صـ(${pageNumber})، الجزء رقم (${juzNumber}) حتي قوله تعالى: ${ayahText}`;
+                let formattedComment;
+                if (language === 'ar') {
+                    formattedComment = `${surahName} (${surah})، آية رقم (${verse}) صـ(${pageNumber})، الجزء رقم (${juzNumber}) حتي قوله تعالى: ${ayahText}`;
+                } else {
+                    formattedComment = `Surah ${surahName} (${surah}), Ayah (${verse}), Page (${pageNumber}), Juz (${juzNumber}) until: ${ayahText}`;
+                }
 
                 // STEP 2: Post Comment
                 showStatus("📝 Adding Todoist comment...", "loading");
@@ -316,8 +323,14 @@
 
                 // STEP 3: Update Task URL
                 showStatus("🔗 Updating task link...", "loading");
-                const newUrl = `https://quran.com/ar/${surah}?startingVerse=${verse}`;
-                const newContent = `[قراءة القرآن الكريم](${newUrl})`;
+                let newUrl, newContent;
+                if (language === 'ar') {
+                    newUrl = `https://quran.com/ar/${surah}?startingVerse=${verse}`;
+                    newContent = `[قراءة القرآن الكريم](${newUrl})`;
+                } else {
+                    newUrl = `https://quran.com/${surah}?startingVerse=${verse}`;
+                    newContent = `[Reading the Holy Quran](${newUrl})`;
+                }
 
                 await fetchWithRetry(`https://api.todoist.com/api/v1/tasks/${taskId}`, {
                     method: 'POST',
