@@ -21,6 +21,21 @@ This repository contains both a **Chrome Extension** for an integrated experienc
 
 ---
 
+## 📋 How to Use
+
+1.  **Prepare Todoist:** 
+    - Create a dedicated task in Todoist (e.g., "Daily Quran Reading").
+    - Open the task in your browser and copy the **Task ID** from the end of the URL (it's the long string of numbers after `/task/`).
+2.  **Setup the Tool:**
+    - **Chrome Extension:** [Install](#installation) and [configure](#configuration) the extension with your Todoist API Token and the Task ID.
+    - **Web Version:** Open the [Web Version](#-web-version-github-pages) and enter your credentials in the settings.
+3.  **Read Quran:** Read from your physical Mushaf or directly on [Quran.com](https://quran.com).
+4.  **Update Progress:**
+    - **Using the Extension:** On any page of [Quran.com](https://quran.com), click the **"Activate Ayah Selector"** button at the bottom right, then click on the specific Ayah you just finished.
+    - **Using the Web Version:** Simply enter the **Surah Number** and **Ayah Number** into the form and click "Update Progress".
+
+---
+
 ## 🛠 Chrome Extension
 
 The extension provides the most seamless experience by allowing you to select verses directly on the Quran.com interface.
