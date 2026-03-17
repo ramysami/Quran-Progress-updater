@@ -300,14 +300,19 @@
         // --- MAIN LOGIC ---
         updateBtn.addEventListener('click', async () => {
             const surah = surahInput.value;
-            const verse = verseInput.value;
+            let verse = verseInput.value;
             const token = getSetting('todoistToken');
             const taskId = getSetting('taskId');
             const language = getSetting('language') || 'ar';
 
-            if (!surah || !verse) {
-                showStatus("Please enter both Surah and Verse numbers", "error");
+            if (!surah) {
+                showStatus("Please enter a Surah number", "error");
                 return;
+            }
+
+            if (!verse || parseInt(verse, 10) === 0) {
+                verse = '1';
+                verseInput.value = '1';
             }
 
             const surahNum = parseInt(surah, 10);
