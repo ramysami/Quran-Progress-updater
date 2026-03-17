@@ -189,7 +189,14 @@
             }
         }
 
-        document.getElementById('surah').addEventListener('input', handleNumericInput);
+        document.getElementById('surah').addEventListener('input', (e) => {
+            handleNumericInput(e);
+            const val = e.target.value;
+            if (val !== '') {
+                const num = parseInt(val, 10);
+                if (num > 114) e.target.value = '114';
+            }
+        });
         document.getElementById('verse').addEventListener('input', handleNumericInput);
         document.getElementById('taskId').addEventListener('input', handleNumericInput);
 
@@ -300,6 +307,12 @@
 
             if (!surah || !verse) {
                 showStatus("Please enter both Surah and Verse numbers", "error");
+                return;
+            }
+
+            const surahNum = parseInt(surah, 10);
+            if (surahNum < 1 || surahNum > 114) {
+                showStatus("Surah number must be between 1 and 114", "error");
                 return;
             }
 
