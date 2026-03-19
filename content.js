@@ -1,4 +1,40 @@
 (function () {
+    const translations = {
+        ar: {
+            cancelled: "❌ تم الإلغاء",
+            hoverInstruction: "📌 مرر الفأرة فوق الآية واضغط للحفظ",
+            processing: "جاري المعالجة...",
+            tokenError: "❌ لم يتم ضبط رمز Todoist. يرجى ضبطه في خيارات الامتداد.",
+            taskIdError: "❌ لم يتم ضبط رقم المهمة. يرجى ضبطه في خيارات الامتداد.",
+            fetching: "⏳ جاري جلب تفاصيل الآية...",
+            updating: "📝 جاري تحديث Todoist...",
+            completedMsg: " وتم إكمال المهمة!",
+            savedPrefix: "✅ تم الحفظ: ",
+            failedPrefix: "❌ فشل: ",
+            selectionCancelled: "تم إلغاء التحديد",
+            connectionIssue: "⚠️ مشكلة في الاتصال... جاري المحاولة "
+        },
+        en: {
+            cancelled: "❌ Cancelled",
+            hoverInstruction: "📌 Hover over a verse and click to save",
+            processing: "Processing...",
+            tokenError: "❌ Todoist token not set. Please set it in the extension options.",
+            taskIdError: "❌ Todoist Task ID not set. Please set it in the extension options.",
+            fetching: "⏳ Fetching Ayah details...",
+            updating: "📝 Updating Todoist...",
+            completedMsg: " & Completed!",
+            savedPrefix: "✅ Saved: ",
+            failedPrefix: "❌ Failed: ",
+            selectionCancelled: "Selection cancelled",
+            connectionIssue: "⚠️ Connection issue... Retrying "
+        }
+    };
+
+    let language = 'ar'; 
+    chrome.storage.sync.get(['language'], function(result) {
+        language = result.language || 'ar';
+    });
+
     let selecting = false;
     let persistentToast = null;
     let hoveredElement = null;
@@ -93,7 +129,8 @@
                 console.warn(`Attempt ${i + 1} failed: ${err.message}`);
                 
                 if (isLast) throw err;
-                showToast(`⚠️ Connection issue... Retrying (${i + 1}/${retries})`, true);
+                const t = translations[language] || translations.en;
+                showToast(`${t.connectionIssue} (${i + 1}/${retries})`, true);
                 await new Promise(res => setTimeout(res, 1500));
             }
         }
@@ -136,17 +173,21 @@
 
         btn.addEventListener('click', (e) => {
             e.stopPropagation(); // Don't trigger page clicks
-            if (selecting) {
-                selecting = false;
-                clearHighlight();
-                clearPersistentToast();
-                showToast("❌ Cancelled");
-                btn.style.backgroundColor = getBaseBg();
-                return;
-            }
-            selecting = true;
-            btn.style.backgroundColor = '#2ecc71'; // Green when active
-            showToast('📌 Hover over a verse and click to save', true);
+            chrome.storage.sync.get(['language'], function(result) {
+                language = result.language || 'ar';
+                const t = translations[language] || translations.en;
+                if (selecting) {
+                    selecting = false;
+                    clearHighlight();
+                    clearPersistentToast();
+                    showToast(t.cancelled);
+                    btn.style.backgroundColor = getBaseBg();
+                    return;
+                }
+                selecting = true;
+                btn.style.backgroundColor = '#2ecc71'; // Green when active
+                showToast(t.hoverInstruction, true);
+            });
         });
 
         document.body.appendChild(btn);
@@ -179,6 +220,8 @@
         const locationVal = hoveredElement.dataset.verseKey || hoveredElement.dataset.wordLocation;
         if (!locationVal) return;
 
+        const t = translations[language] || translations.en;
+
         // Clear highlight and exit selection mode immediately
         clearHighlight();
         const btn = document.getElementById('ayah-select-btn');
@@ -186,7 +229,7 @@
             const getBaseBg = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)';
             btn.style.backgroundColor = getBaseBg();
         }
-        showToast("Processing...", true);
+        showToast(t.processing, true);
 
         // Parse: "4:1:1" (word) or "4:1" (verse)
         const parts = locationVal.split(':');
@@ -197,17 +240,19 @@
         
         // CONFIG
         chrome.storage.sync.get(['todoistToken', 'todoistTaskId', 'language'], async function(result) {
+            language = result.language || 'ar';
+            const t = translations[language] || translations.en;
+
             if (!result.todoistToken) {
-                showToast("❌ Todoist token not set. Please set it in the extension options.", false);
+                showToast(t.tokenError, false);
                 return;
             }
             if (!result.todoistTaskId) {
-                showToast("❌ Todoist Task ID not set. Please set it in the extension options.", false);
+                showToast(t.taskIdError, false);
                 return;
             }
             const todoistToken = result.todoistToken;
             const taskId = result.todoistTaskId;
-            const language = result.language || 'ar';
 
         try {
             // Disable selection mode immediately
@@ -215,7 +260,7 @@
             clearPersistentToast();
 
             // STEP 1: Fetch Quran Data
-            showToast("⏳ Fetching Ayah details...", true);
+            showToast(t.fetching, true);
             
             // We always fetch the Arabic edition (ar.alafasy) to get the Arabic ayah text.
             // The metadata (data.surah.englishName) is still available for English formatting.
@@ -243,7 +288,7 @@
             }
             
             // STEP 2: Post Comment
-            showToast("📝 Updating Todoist...", true);
+            showToast(t.updating, true);
             
             await fetchWithRetry(`https://api.todoist.com/api/v1/comments`, {
                 method: 'POST',
@@ -289,15 +334,15 @@
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${todoistToken}` }
                 });
-                completionMsg = " & Completed!";
+                completionMsg = t.completedMsg;
             }
 
             // SUCCESS
-            showToast(`✅ Saved: ${surahName} : ${ayah}${completionMsg}`, false);
+            showToast(`${t.savedPrefix}${surahName} : ${ayah}${completionMsg}`, false);
 
         } catch (err) {
             console.error(err);
-            showToast("❌ Failed: " + err.message, false);
+            showToast(`${t.failedPrefix}${err.message}`, false);
             // Re-enable selection if it failed so user can try again
             selecting = true; 
             if(btn) btn.style.backgroundColor = '#2ecc71';
@@ -355,10 +400,11 @@
         // Cancel selection with Escape key
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && selecting) {
+                const t = translations[language] || translations.en;
                 selecting = false;
                 clearHighlight();
                 clearPersistentToast();
-                showToast("Selection cancelled");
+                showToast(t.selectionCancelled);
                 const btn = document.getElementById('ayah-select-btn');
                 if (btn) {
                     const getBaseBg = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)';
