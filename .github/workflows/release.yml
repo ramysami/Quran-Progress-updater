@@ -9,33 +9,39 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Required to push the commit and create the release
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: main # Ensure we are on the branch, not a detached head
 
-      - name: Auto-Increment Manifest Version
+      - name: Auto-Increment and Commit
         run: |
+          # 1. Update manifest.json
           NEW_VERSION=${GITHUB_REF_NAME#v}
           jq --arg ver "$NEW_VERSION" '.version = $ver' manifest.json > tmp.json && mv tmp.json manifest.json
+          
+          # 2. Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 3. Commit and Push back to main
+          git add manifest.json
+          git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
+          git push origin main
 
-      - name: Prepare Extension Info
-          # Extract name, replace spaces with _, and create filename
+      - name: Prepare Filename
         run: |
           RAW_NAME=$(jq -r '.name' manifest.json)
-          EXT_VER=$(jq -r '.version' manifest.json)
           CLEAN_NAME="${RAW_NAME// /_}"
-          echo "FILENAME=${CLEAN_NAME}_v${EXT_VER}.zip" >> $GITHUB_ENV
+          echo "FILENAME=${CLEAN_NAME}_v${GITHUB_REF_NAME#v}.zip" >> $GITHUB_ENV
 
-      - name: Create Extension Zip
+      - name: Create Flat Zip
         run: |
-          # Added your custom exclusions:
-          # - assets/screenshots/* (Keep other assets, remove screens)
-          # - .gemini/* (Internal AI configs)
-          zip -r "${{ env.FILENAME }}" . \
-            -x ".git/*" ".github/*" ".gitignore" "*.md" "tests/*" \
-            "**/.DS_Store" "assets/screenshots/*" ".gemini/*" "docs/*"
+          # Zip everything in the current dir (.) excluding the junk
+          zip -r "${{ env.FILENAME }}" . -x ".git/*" ".github/*" ".gitignore" "*.md" "tests/*" "**/.DS_Store" "assets/screenshots/*" ".gemini/*" "docs/*"
 
       - name: Create GitHub Release
         env:
