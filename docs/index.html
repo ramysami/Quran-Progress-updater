@@ -209,26 +209,6 @@
             }
         }
 
-        document.getElementById('surah').addEventListener('input', (e) => {
-            handleNumericInput(e);
-            const val = e.target.value;
-            if (val !== '') {
-                const num = parseInt(val, 10);
-                if (num > 114) e.target.value = '114';
-            }
-        });
-        document.getElementById('verse').addEventListener('input', handleNumericInput);
-        document.getElementById('taskId').addEventListener('input', handleNumericInput);
-
-        // --- PERSISTENCE HELPERS ---
-        function setSetting(name, value) {
-            localStorage.setItem(name, value);
-        }
-
-        function getSetting(name) {
-            return localStorage.getItem(name);
-        }
-
         // --- UI LOGIC ---
         const mainSection = document.getElementById('main-section');
         const setupSection = document.getElementById('setup-section');
@@ -242,6 +222,36 @@
         const showSettingsBtn = document.getElementById('show-settings');
         const saveSettingsBtn = document.getElementById('save-settings-btn');
         const cancelSettingsBtn = document.getElementById('cancel-settings');
+
+        document.getElementById('surah').addEventListener('input', (e) => {
+            handleNumericInput(e);
+            const val = e.target.value;
+            if (val !== '') {
+                const num = parseInt(val, 10);
+                if (num > 114) e.target.value = '114';
+            }
+        });
+        document.getElementById('surah').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                verseInput.focus();
+            }
+        });
+        document.getElementById('verse').addEventListener('input', handleNumericInput);
+        document.getElementById('verse').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                updateBtn.click();
+            }
+        });
+        document.getElementById('taskId').addEventListener('input', handleNumericInput);
+
+        // --- PERSISTENCE HELPERS ---
+        function setSetting(name, value) {
+            localStorage.setItem(name, value);
+        }
+
+        function getSetting(name) {
+            return localStorage.getItem(name);
+        }
 
         function checkSetup() {
             const token = getSetting('todoistToken');
@@ -365,12 +375,12 @@
                     formattedComment = `سُورَةُ ${surahName} (${surah})
                 الجزء: ${juzNumber}
                 صفحة: ${pageNumber}
-                آيه (${ayah}): ${ayahText}`;
+                آيه (${verse}): ${ayahText}`;
                 } else {
                     formattedComment = `Surah ${surahName} (${surah})
                 Juz: ${juzNumber}
                 Page: ${pageNumber}
-                Ayah (${ayah}): ${ayahText}`;
+                Ayah (${verse}): ${ayahText}`;
                 }
 
                 // STEP 2: Post Comment

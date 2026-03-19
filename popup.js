@@ -13,16 +13,6 @@ function handleNumericInput(e) {
     }
 }
 
-document.getElementById('surah').addEventListener('input', (e) => {
-    handleNumericInput(e);
-    const val = e.target.value;
-    if (val !== '') {
-        const num = parseInt(val, 10);
-        if (num > 114) e.target.value = '114';
-    }
-});
-document.getElementById('verse').addEventListener('input', handleNumericInput);
-
 // --- UI LOGIC ---
 const mainSection = document.getElementById('main-section');
 const errorSection = document.getElementById('error-section');
@@ -32,6 +22,26 @@ const updateBtn = document.getElementById('update-btn');
 const statusDiv = document.getElementById('status');
 const goToOptionsBtn = document.getElementById('go-to-options');
 const optionsFooterLink = document.getElementById('options-footer-link');
+
+document.getElementById('surah').addEventListener('input', (e) => {
+    handleNumericInput(e);
+    const val = e.target.value;
+    if (val !== '') {
+        const num = parseInt(val, 10);
+        if (num > 114) e.target.value = '114';
+    }
+});
+document.getElementById('surah').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        verseInput.focus();
+    }
+});
+document.getElementById('verse').addEventListener('input', handleNumericInput);
+document.getElementById('verse').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        updateBtn.click();
+    }
+});
 
 function showStatus(msg, type = '') {
     statusDiv.textContent = msg;
