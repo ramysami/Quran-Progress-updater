@@ -17,28 +17,25 @@ jobs:
 
       - name: Auto-Increment Manifest Version
         run: |
-          # Strip the 'v' from the tag name (e.g., v1.5.0 -> 1.5.0)
           NEW_VERSION=${GITHUB_REF_NAME#v}
-          
-          # Update the version field in manifest.json
-          # jq '.' manifest.json ensures the JSON stays pretty-printed
           jq --arg ver "$NEW_VERSION" '.version = $ver' manifest.json > tmp.json && mv tmp.json manifest.json
-          
-          echo "Updated manifest.json to version $NEW_VERSION"
 
       - name: Prepare Extension Info
-        id: info
+          # Extract name, replace spaces with _, and create filename
         run: |
           RAW_NAME=$(jq -r '.name' manifest.json)
           EXT_VER=$(jq -r '.version' manifest.json)
           CLEAN_NAME="${RAW_NAME// /_}"
-          FILENAME="${CLEAN_NAME}_v${EXT_VER}.zip"
-          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+          echo "FILENAME=${CLEAN_NAME}_v${EXT_VER}.zip" >> $GITHUB_ENV
 
       - name: Create Extension Zip
         run: |
-          # Zip root contents (manifest.json will now have the new version)
-          zip -r "${{ env.FILENAME }}" . -x ".git/*" ".github/*" ".gitignore" "*.md" "**/.DS_Store" 
+          # Added your custom exclusions:
+          # - assets/screenshots/* (Keep other assets, remove screens)
+          # - .gemini/* (Internal AI configs)
+          zip -r "${{ env.FILENAME }}" . \
+            -x ".git/*" ".github/*" ".gitignore" "*.md" "tests/*" \
+            "**/.DS_Store" "assets/screenshots/*" ".gemini/*" "docs/*"
 
       - name: Create GitHub Release
         env:
