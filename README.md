@@ -44,7 +44,7 @@ A tool to track your Quran reading progress by integrating [Quran.com](https://q
 ### Usage
 
 1. Visit [Quran.com](https://quran.com).
-2. Click the **"Activate Ayah Selector"** button at the bottom right.
+2. Click the **"Activate Ayah Selector"** button at the bottom right or the extension icon to launch the popup.
 3. Click on the Ayah you just finished reading.
 4. The extension will handle the rest!
 
