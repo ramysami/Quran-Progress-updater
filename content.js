@@ -26,6 +26,7 @@
             return;
         }
 
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const toast = document.createElement('div');
         toast.textContent = '\u200E' + message;
         Object.assign(toast.style, {
@@ -33,13 +34,13 @@
             bottom: '10%',
             left: '50%',
             transform: 'translateX(-50%)',
-            backgroundColor: 'rgba(30, 30, 30, 0.95)',
-            color: '#fff',
+            backgroundColor: isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            color: isDark ? '#fff' : '#333',
             padding: '12px 20px',
             borderRadius: '8px',
             fontSize: '14px',
             zIndex: '2147483647', // Max Z-Index
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.1)',
             opacity: '0',
             transition: 'opacity 0.3s ease-in-out',
             pointerEvents: 'none',
@@ -47,7 +48,8 @@
             maxWidth: '90vw',
             direction: 'ltr',
             textAlign: 'center',
-            backdropFilter: 'blur(4px)'
+            backdropFilter: 'blur(4px)',
+            border: isDark ? '1px solid #444' : '1px solid #ddd'
         });
 
         document.body.appendChild(toast);
@@ -101,6 +103,7 @@
     function insertButton() {
         if (document.getElementById('ayah-select-btn')) return;
 
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const btn = document.createElement('button');
         btn.id = 'ayah-select-btn';
         btn.innerHTML = '<span>📖</span>'; 
@@ -112,9 +115,9 @@
             zIndex: '2147483647',
             width: '50px',
             height: '50px',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)', 
-            color: '#fff',
-            border: '2px solid rgba(255,255,255,0.2)',
+            backgroundColor: isDark ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)', 
+            color: isDark ? '#fff' : '#333',
+            border: isDark ? '2px solid rgba(255,255,255,0.1)' : '2px solid rgba(0,0,0,0.1)',
             borderRadius: '50%', 
             fontSize: '24px',
             cursor: 'pointer',
@@ -123,8 +126,10 @@
             alignItems: 'center',
             justifyContent: 'center',
             backdropFilter: 'blur(4px)',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+            boxShadow: isDark ? '0 4px 10px rgba(0,0,0,0.5)' : '0 4px 10px rgba(0,0,0,0.1)'
         });
+
+        const getBaseBg = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)';
 
         btn.onmousedown = () => { btn.style.transform = 'scale(0.9)'; };
         btn.onmouseup = () => { btn.style.transform = 'scale(1.1)'; };
@@ -136,7 +141,7 @@
                 clearHighlight();
                 clearPersistentToast();
                 showToast("❌ Cancelled");
-                btn.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                btn.style.backgroundColor = getBaseBg();
                 return;
             }
             selecting = true;
@@ -177,7 +182,10 @@
         // Clear highlight and exit selection mode immediately
         clearHighlight();
         const btn = document.getElementById('ayah-select-btn');
-        if (btn) btn.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        if (btn) {
+            const getBaseBg = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)';
+            btn.style.backgroundColor = getBaseBg();
+        }
         showToast("Processing...", true);
 
         // Parse: "4:1:1" (word) or "4:1" (verse)
@@ -352,7 +360,10 @@
                 clearPersistentToast();
                 showToast("Selection cancelled");
                 const btn = document.getElementById('ayah-select-btn');
-                if (btn) btn.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+                if (btn) {
+                    const getBaseBg = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(40, 40, 40, 0.8)' : 'rgba(255, 255, 255, 0.9)';
+                    btn.style.backgroundColor = getBaseBg();
+                }
             }
         });
     }
