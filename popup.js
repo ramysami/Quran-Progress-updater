@@ -77,6 +77,7 @@ function checkSetup() {
         } else {
             mainSection.style.display = 'block';
             errorSection.style.display = 'none';
+            surahInput.focus();
         }
     });
 }
