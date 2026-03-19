@@ -118,6 +118,7 @@
             margin-top: 20px;
             font-size: 14px;
             min-height: 20px;
+            line-height: 1.4;
         }
 
         #setup-section {
@@ -153,18 +154,18 @@
 <body>
 
     <div class="container">
-        <h1>📖 Quran Progress</h1>
+        <h1 id="title">📖 Quran Progress</h1>
 
         <!-- Main Form -->
         <div id="main-section">
             <div class="form-group">
-                <label for="surah">Surah</label>
+                <label for="surah" id="surah-label">Surah</label>
                 <select id="surah">
                     <option value="">Select Surah</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="verse">Verse Number</label>
+                <label for="verse" id="verse-label">Verse Number</label>
                 <input type="text" id="verse" placeholder="e.g. 10" inputmode="numeric">
             </div>
             <button id="update-btn">Update Progress</button>
@@ -174,17 +175,17 @@
 
         <!-- Setup Section -->
         <div id="setup-section">
-            <h2>Settings</h2>
+            <h2 id="settings-title">Settings</h2>
             <div class="form-group">
-                <label for="token">Todoist API Token</label>
+                <label for="token" id="token-label">Todoist API Token</label>
                 <input type="password" id="token" placeholder="Paste your API token">
             </div>
             <div class="form-group">
-                <label for="taskId">Todoist Task ID</label>
+                <label for="taskId" id="taskId-label">Todoist Task ID</label>
                 <input type="text" id="taskId" placeholder="Paste your Task ID">
             </div>
             <div class="form-group">
-                <label for="language">Language</label>
+                <label for="language" id="language-label">Language</label>
                 <select id="language">
                     <option value="ar">Arabic (العربية)</option>
                     <option value="en">English</option>
@@ -313,6 +314,63 @@
             { "number": 114, "name": "الناس", "english": "An-Nas" }
         ];
 
+        const translations = {
+            ar: {
+                title: "📖 تقدم القرآن",
+                surahLabel: "السورة",
+                verseLabel: "رقم الآية",
+                versePlaceholder: "مثال: 10",
+                updateBtn: "تحديث التقدم",
+                settingsBtn: "الإعدادات",
+                settingsTitle: "الإعدادات",
+                tokenLabel: "رمز Todoist API",
+                tokenPlaceholder: "الصق الرمز هنا",
+                taskIdLabel: "رقم المهمة في Todoist",
+                taskIdPlaceholder: "الصق رقم المهمة هنا",
+                languageLabel: "اللغة",
+                saveSettingsBtn: "حفظ ومتابعة",
+                cancelBtn: "إلغاء",
+                selectSurah: "اختر السورة",
+                processing: "⏳ جاري المعالجة...",
+                fetching: "⏳ جاري جلب تفاصيل الآية...",
+                addingComment: "📝 جاري إضافة التعليق...",
+                updatingLink: "🔗 جاري تحديث الرابط...",
+                checkingStatus: "✅ جاري التحقق من حالة المهمة...",
+                completedMsg: " وتم إكمال المهمة!",
+                successPrefix: "✅ تم الحفظ بنجاح: ",
+                errorPrefix: "❌ خطأ: ",
+                pleaseSelectSurah: "يرجى اختيار السورة",
+                fillFields: "يرجى ملء كلا الحقلين."
+            },
+            en: {
+                title: "📖 Quran Progress",
+                surahLabel: "Surah",
+                verseLabel: "Verse Number",
+                versePlaceholder: "e.g. 10",
+                updateBtn: "Update Progress",
+                settingsBtn: "Settings",
+                settingsTitle: "Settings",
+                tokenLabel: "Todoist API Token",
+                tokenPlaceholder: "Paste your API token",
+                taskIdLabel: "Todoist Task ID",
+                taskIdPlaceholder: "Paste your Task ID",
+                languageLabel: "Language",
+                saveSettingsBtn: "Save & Continue",
+                cancelBtn: "Cancel",
+                selectSurah: "Select Surah",
+                processing: "⏳ Processing...",
+                fetching: "⏳ Fetching Ayah details...",
+                addingComment: "📝 Adding Todoist comment...",
+                updatingLink: "🔗 Updating task link...",
+                checkingStatus: "✅ Checking task status...",
+                completedMsg: " & Completed!",
+                successPrefix: "✅ Successfully saved: ",
+                errorPrefix: "❌ Error: ",
+                pleaseSelectSurah: "Please select a Surah",
+                fillFields: "Please fill in both fields."
+            }
+        };
+
         // --- NUMERIC HELPERS ---
         function convertArabicToWestern(str) {
             return str.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
@@ -365,11 +423,33 @@
             return localStorage.getItem(name);
         }
 
+        function updateUI(lang) {
+            const t = translations[lang] || translations.en;
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('surah-label').textContent = t.surahLabel;
+            document.getElementById('verse-label').textContent = t.verseLabel;
+            document.getElementById('verse').placeholder = t.versePlaceholder;
+            document.getElementById('update-btn').textContent = t.updateBtn;
+            document.getElementById('show-settings').textContent = t.settingsBtn;
+            document.getElementById('settings-title').textContent = t.settingsTitle;
+            document.getElementById('token-label').textContent = t.tokenLabel;
+            document.getElementById('token').placeholder = t.tokenPlaceholder;
+            document.getElementById('taskId-label').textContent = t.taskIdLabel;
+            document.getElementById('taskId').placeholder = t.taskIdPlaceholder;
+            document.getElementById('language-label').textContent = t.languageLabel;
+            document.getElementById('save-settings-btn').textContent = t.saveSettingsBtn;
+            document.getElementById('cancel-settings').textContent = t.cancelBtn;
+            
+            // Set text direction
+            document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
         function populateSurahDropdown() {
             const language = getSetting('language') || 'ar';
             const currentSurah = surahSelect.value;
+            const t = translations[language] || translations.en;
             
-            surahSelect.innerHTML = `<option value="">${language === 'ar' ? 'اختر السورة' : 'Select Surah'}</option>`;
+            surahSelect.innerHTML = `<option value="">${t.selectSurah}</option>`;
             SURAHS.forEach(s => {
                 const option = document.createElement('option');
                 option.value = s.number;
@@ -387,6 +467,8 @@
             const taskId = getSetting('taskId');
             const language = getSetting('language') || 'ar';
             
+            updateUI(language);
+
             if (!token || !taskId) {
                 mainSection.style.display = 'none';
                 setupSection.style.display = 'block';
@@ -433,6 +515,7 @@
             const token = tokenInput.value.trim();
             const taskId = taskIdInput.value.trim();
             const language = languageSelect.value;
+            const t = translations[language] || translations.en;
             
             if (token && taskId) {
                 const oldLanguage = getSetting('language');
@@ -446,7 +529,7 @@
                 
                 checkSetup();
             } else {
-                alert("Please fill in both fields.");
+                alert(t.fillFields);
             }
         });
 
@@ -500,9 +583,10 @@
             const token = getSetting('todoistToken');
             const taskId = getSetting('taskId');
             const language = getSetting('language') || 'ar';
+            const t = translations[language] || translations.en;
 
             if (!surah) {
-                showStatus(language === 'ar' ? "يرجى اختيار السورة" : "Please select a Surah", "error");
+                showStatus(t.pleaseSelectSurah, "error");
                 return;
             }
 
@@ -512,11 +596,11 @@
             }
 
             updateBtn.disabled = true;
-            showStatus(language === 'ar' ? "⏳ جاري المعالجة..." : "⏳ Processing...", "loading");
+            showStatus(t.processing, "loading");
 
             try {
                 // STEP 1: Fetch Quran Data
-                showStatus(language === 'ar' ? "⏳ جاري جلب تفاصيل الآية..." : "⏳ Fetching Ayah details...", "loading");
+                showStatus(t.fetching, "loading");
                 
                 const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${verse}/ar.alafasy`);
                 const quranJson = await quranRes.json();
@@ -542,7 +626,7 @@
                 }
 
                 // STEP 2: Post Comment
-                showStatus(language === 'ar' ? "📝 جاري إضافة التعليق..." : "📝 Adding Todoist comment...", "loading");
+                showStatus(t.addingComment, "loading");
                 await fetchWithRetry(`https://api.todoist.com/api/v1/comments`, {
                     method: 'POST',
                     headers: {
@@ -556,7 +640,7 @@
                 });
 
                 // STEP 3: Update Task URL
-                showStatus(language === 'ar' ? "🔗 جاري تحديث الرابط..." : "🔗 Updating task link...", "loading");
+                showStatus(t.updatingLink, "loading");
                 let newUrl, newContent;
                 if (language === 'ar') {
                     newUrl = `https://quran.com/ar/${surah}?startingVerse=${verse}`;
@@ -576,7 +660,7 @@
                 });
 
                 // STEP 4: Check Completion
-                showStatus(language === 'ar' ? "✅ جاري التحقق من حالة المهمة..." : "✅ Checking task status...", "loading");
+                showStatus(t.checkingStatus, "loading");
                 const taskRes = await fetchWithRetry(`https://api.todoist.com/api/v1/tasks/${taskId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -589,19 +673,17 @@
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    completionMsg = language === 'ar' ? " وتم إكمال المهمة!" : " & Completed!";
+                    completionMsg = t.completedMsg;
                 }
 
-                const successMsg = language === 'ar' ? 
-                    `✅ تم الحفظ بنجاح: ${surahName} : ${verse}${completionMsg}` : 
-                    `✅ Successfully saved: ${surahName} : ${verse}${completionMsg}`;
+                const successMsg = t.successPrefix + `${surahName} : ${verse}${completionMsg}`;
                 
                 showStatus(successMsg, "success");
                 verseInput.value = '';
 
             } catch (err) {
                 console.error(err);
-                showStatus(language === 'ar' ? "❌ خطأ: " + err.message : "❌ Error: " + err.message, "error");
+                showStatus(t.errorPrefix + err.message, "error");
             } finally {
                 updateBtn.disabled = false;
                 if (document.activeElement instanceof HTMLElement) {
