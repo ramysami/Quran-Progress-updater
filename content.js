@@ -221,12 +221,19 @@
             const ayahText = data.text; // This will now always be Arabic
 
             let formattedComment;
+            
             if (language === 'ar') {
-                formattedComment = `${surahName} (${surah})، آية رقم (${ayah}) صـ(${pageNumber})، الجزء رقم (${juzNumber}) حتي قوله تعالى: ${ayahText}`;
+                formattedComment = `سُورَةُ ${surahName} (${surah})
+            الجزء: ${juzNumber}
+            صفحة: ${pageNumber}
+            آيه (${ayah}): ${ayahText}`;
             } else {
-                formattedComment = `Surah ${surahName} (${surah}), Ayah (${ayah}), Page (${pageNumber}), Juz (${juzNumber}) until: ${ayahText}`;
+                formattedComment = `Surah ${surahName} (${surah})
+            Juz: ${juzNumber}
+            Page: ${pageNumber}
+            Ayah (${ayah}): ${ayahText}`;
             }
-
+            
             // STEP 2: Post Comment
             showToast("📝 Updating Todoist...", true);
             
