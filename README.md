@@ -12,10 +12,10 @@ A tool to track your Quran reading progress by integrating [Quran.com](https://q
 
 ## Screenshots
 ### Extension version
-![A GIF shows how to the extension works](assets/screengrab.gif)
+![A GIF shows how to the extension works](assets/screenshots/screengrab.gif)
 
 ### Standalone HTML version
-<img src="assets/screenshot.png" width="520" />
+<img src="assets/screenshots/screenshot.png" width="520" />
 <!-- ![A screenshot of the standalone HTML version](assets/screenshot.png) -->
 
 ## Preparation
