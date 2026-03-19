@@ -146,6 +146,7 @@ surahSelect.addEventListener('keydown', (e) => {
     }
 });
 document.getElementById('verse').addEventListener('input', handleNumericInput);
+document.getElementById('verse').addEventListener('focus', (e) => e.target.select());
 document.getElementById('verse').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         updateBtn.click();
