@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Quran Progress Updater",
-  "version": "1.1",
+  "version": "1.5",
   "description": "Select Quran Ayah and update Todoist with detailed metadata.",
   "permissions": ["scripting", "activeTab", "storage"],
   "options_page": "options.html",
