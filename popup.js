@@ -203,12 +203,39 @@ function checkSetup() {
             mainSection.style.display = 'block';
             errorSection.style.display = 'none';
             populateSurahDropdown();
+            prefillFromTask();
             surahSelect.focus();
         }
     });
 }
 
 // --- NETWORK HELPERS ---
+async function prefillFromTask() {
+    if (!todoistToken || !taskId) return;
+    
+    try {
+        const response = await fetchWithRetry(`https://api.todoist.com/api/v1/tasks/${taskId}`, {
+            headers: { 'Authorization': `Bearer ${todoistToken}` }
+        });
+        const task = await response.json();
+        const content = task.content;
+        
+        // Match both Arabic and English URLs
+        // Format: [text](https://quran.com/1?startingVerse=1) or [text](https://quran.com/ar/1?startingVerse=1)
+        const match = content.match(/https:\/\/quran\.com\/(?:ar\/)?(\d+)\?startingVerse=(\d+)/);
+        
+        if (match) {
+            const surahNum = match[1];
+            const verseNum = match[2];
+            
+            surahSelect.value = surahNum;
+            verseInput.value = verseNum;
+        }
+    } catch (err) {
+        console.error("Failed to prefill from task:", err);
+    }
+}
+
 async function fetchWithRetry(url, options = {}, retries = 3, timeout = 6000) {
     for (let i = 0; i < retries; i++) {
         try {
@@ -345,9 +372,6 @@ Ayah (${verse}): ${ayahText}`;
         }
     }
 });
-
-// Initialize
-checkSetup();
 
 // Initialize
 checkSetup();
