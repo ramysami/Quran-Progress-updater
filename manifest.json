@@ -1,9 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Quran Progress Updater",
-  "version": "1.5",
+  "version": "1.6.1",
   "description": "Select Quran Ayah and update Todoist with detailed metadata.",
-  "permissions": ["scripting", "activeTab", "storage"],
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "storage"
+  ],
   "options_page": "options.html",
   "host_permissions": [
     "https://quran.com/*",
@@ -24,9 +28,15 @@
       "128": "assets/icons/icon128.png"
     }
   },
-  "content_scripts": [{
-    "matches": ["https://quran.com/*"],
-    "js": ["content.js"],
-    "run_at": "document_idle"
-  }]
+  "content_scripts": [
+    {
+      "matches": [
+        "https://quran.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
 }
