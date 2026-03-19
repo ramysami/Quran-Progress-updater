@@ -217,6 +217,9 @@ Ayah (${verse}): ${ayahText}`;
         showStatus("❌ Error: " + err.message, "error");
     } finally {
         updateBtn.disabled = false;
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     }
 });
 
