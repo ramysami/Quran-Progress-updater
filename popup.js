@@ -175,10 +175,69 @@ optionsFooterLink.addEventListener('click', (e) => {
 // --- PERSISTENCE ---
 let todoistToken, taskId, language;
 
+const translations = {
+    ar: {
+        title: "📖 تقدم القرآن",
+        surahLabel: "السورة",
+        verseLabel: "رقم الآية",
+        versePlaceholder: "مثال: 10",
+        updateBtn: "تحديث التقدم",
+        errorSettings: "لم يتم العثور على الإعدادات.",
+        openOptionsBtn: "فتح الإعدادات",
+        optionsFooterLink: "الإعدادات / الخيارات",
+        selectSurah: "اختر السورة",
+        processing: "⏳ جاري المعالجة...",
+        fetching: "⏳ جاري جلب تفاصيل الآية...",
+        addingComment: "📝 جاري إضافة التعليق...",
+        updatingLink: "🔗 جاري تحديث الرابط...",
+        checkingStatus: "✅ جاري التحقق من حالة المهمة...",
+        completedMsg: " وتم إكمال المهمة!",
+        successPrefix: "✅ تم الحفظ بنجاح: ",
+        errorPrefix: "❌ خطأ: ",
+        pleaseSelectSurah: "يرجى اختيار السورة"
+    },
+    en: {
+        title: "📖 Quran Progress",
+        surahLabel: "Surah",
+        verseLabel: "Verse Number",
+        versePlaceholder: "e.g. 10",
+        updateBtn: "Update Progress",
+        errorSettings: "Settings not found.",
+        openOptionsBtn: "Open Options",
+        optionsFooterLink: "Settings / Options",
+        selectSurah: "Select Surah",
+        processing: "⏳ Processing...",
+        fetching: "⏳ Fetching Ayah details...",
+        addingComment: "📝 Adding Todoist comment...",
+        updatingLink: "🔗 Updating task link...",
+        checkingStatus: "✅ Checking task status...",
+        completedMsg: " & Completed!",
+        successPrefix: "✅ Successfully saved: ",
+        errorPrefix: "❌ Error: ",
+        pleaseSelectSurah: "Please select a Surah"
+    }
+};
+
+function updateUI(lang) {
+    const t = translations[lang] || translations.en;
+    document.getElementById('title').textContent = t.title;
+    document.querySelector('label[for="surah"]').textContent = t.surahLabel;
+    document.querySelector('label[for="verse"]').textContent = t.verseLabel;
+    document.getElementById('verse').placeholder = t.versePlaceholder;
+    document.getElementById('update-btn').textContent = t.updateBtn;
+    document.querySelector('#error-section p').textContent = t.errorSettings;
+    document.getElementById('go-to-options').textContent = t.openOptionsBtn;
+    document.getElementById('options-footer-link').textContent = t.optionsFooterLink;
+    
+    // Set text direction
+    document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+}
+
 function populateSurahDropdown() {
     const currentSurah = surahSelect.value;
+    const t = translations[language] || translations.en;
     
-    surahSelect.innerHTML = `<option value="">${language === 'ar' ? 'اختر السورة' : 'Select Surah'}</option>`;
+    surahSelect.innerHTML = `<option value="">${t.selectSurah}</option>`;
     SURAHS.forEach(s => {
         const option = document.createElement('option');
         option.value = s.number;
@@ -196,6 +255,8 @@ function checkSetup() {
         todoistToken = items.todoistToken;
         taskId = items.todoistTaskId;
         language = items.language || 'ar';
+
+        updateUI(language);
 
         if (!todoistToken || !taskId) {
             mainSection.style.display = 'none';
@@ -265,9 +326,10 @@ function isTodayOrOverdue(dateStr) {
 updateBtn.addEventListener('click', async () => {
     const surah = surahSelect.value;
     let verse = verseInput.value;
+    const t = translations[language] || translations.en;
 
     if (!surah) {
-        showStatus(language === 'ar' ? "يرجى اختيار السورة" : "Please select a Surah", "error");
+        showStatus(t.pleaseSelectSurah, "error");
         return;
     }
 
@@ -277,11 +339,11 @@ updateBtn.addEventListener('click', async () => {
     }
 
     updateBtn.disabled = true;
-    showStatus(language === 'ar' ? "⏳ جاري المعالجة..." : "⏳ Processing...", "loading");
+    showStatus(t.processing, "loading");
 
     try {
         // STEP 1: Fetch Quran Data
-        showStatus(language === 'ar' ? "⏳ جاري جلب تفاصيل الآية..." : "⏳ Fetching Ayah details...", "loading");
+        showStatus(t.fetching, "loading");
         
         const quranRes = await fetchWithRetry(`https://api.alquran.cloud/v1/ayah/${surah}:${verse}/ar.alafasy`);
         const quranJson = await quranRes.json();
@@ -306,7 +368,7 @@ Ayah (${verse}): ${ayahText}`;
         }
 
         // STEP 2: Post Comment
-        showStatus(language === 'ar' ? "📝 جاري إضافة التعليق..." : "📝 Adding Todoist comment...", "loading");
+        showStatus(t.addingComment, "loading");
         await fetchWithRetry(`https://api.todoist.com/api/v1/comments`, {
             method: 'POST',
             headers: {
@@ -320,7 +382,7 @@ Ayah (${verse}): ${ayahText}`;
         });
 
         // STEP 3: Update Task URL
-        showStatus(language === 'ar' ? "🔗 جاري تحديث الرابط..." : "🔗 Updating task link...", "loading");
+        showStatus(t.updatingLink, "loading");
         let newUrl, newContent;
         if (language === 'ar') {
             newUrl = `https://quran.com/ar/${surah}?startingVerse=${verse}`;
@@ -340,7 +402,7 @@ Ayah (${verse}): ${ayahText}`;
         });
 
         // STEP 4: Check Completion
-        showStatus(language === 'ar' ? "✅ جاري التحقق من حالة المهمة..." : "✅ Checking task status...", "loading");
+        showStatus(t.checkingStatus, "loading");
         const taskRes = await fetchWithRetry(`https://api.todoist.com/api/v1/tasks/${taskId}`, {
             headers: { 'Authorization': `Bearer ${todoistToken}` }
         });
@@ -353,19 +415,17 @@ Ayah (${verse}): ${ayahText}`;
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${todoistToken}` }
             });
-            completionMsg = language === 'ar' ? " وتم إكمال المهمة!" : " & Completed!";
+            completionMsg = t.completedMsg;
         }
 
-        const successMsg = language === 'ar' ? 
-            `✅ تم الحفظ بنجاح: ${surahName} : ${verse}${completionMsg}` : 
-            `✅ Successfully saved: ${surahName} : ${verse}${completionMsg}`;
+        const successMsg = t.successPrefix + `${surahName} : ${verse}${completionMsg}`;
         
         showStatus(successMsg, "success");
         verseInput.value = '';
 
     } catch (err) {
         console.error(err);
-        showStatus(language === 'ar' ? "❌ خطأ: " + err.message : "❌ Error: " + err.message, "error");
+        showStatus(t.errorPrefix + err.message, "error");
     } finally {
         updateBtn.disabled = false;
         if (document.activeElement instanceof HTMLElement) {
