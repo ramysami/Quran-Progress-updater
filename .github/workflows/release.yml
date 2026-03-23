@@ -78,14 +78,21 @@ jobs:
         with:
           node-version: '20'
 
-      # 8. Create CRX File using the clean zip we just made
+      # 8. Create CRX File 
       - name: Create CRX
         run: |
           echo "${{ secrets.EXTENSION_PEM }}" > key.pem
-          # crx3 can take a zip file as input, ensuring the crx exactly matches your zip exclusions
-          npx crx3 build "${{ env.ZIP_FILENAME }}" --key key.pem --crx "${{ env.CRX_FILENAME }}"
-          rm key.pem # Always clean up the secret!
-
+          
+          # Extract our clean zip into a temp folder
+          unzip "${{ env.ZIP_FILENAME }}" -d temp_crx_dir
+          
+          # Pack the folder into a CRX3 file using the standard 'crx' package
+          npx crx pack temp_crx_dir -p key.pem -o "${{ env.CRX_FILENAME }}"
+          
+          # Clean up secrets and temp files
+          rm key.pem
+          rm -rf temp_crx_dir
+          
       # 9. Create GitHub Release
       - name: Create GitHub Release
         env:
