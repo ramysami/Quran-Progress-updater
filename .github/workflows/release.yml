@@ -125,7 +125,7 @@ jobs:
           git clone --branch gh-pages "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages-dir
           
           # Copy our new updates.xml into that folder
-          cp updates.xml gh-pages-dir/
+          cp updates.xml gh-pages-dir/docs/
           
           # Commit and push
           cd gh-pages-dir
