@@ -12,7 +12,7 @@ on:
         type: string
 
 env:
-  EXTENSION_ID: "ejbmkpechdbkjdgbdmahjdfoobchpgpj" # REPLACE THIS with your 32-character ID
+  EXTENSION_ID: "lakmhiaohhgdajfkcfkdnboccbninmdl" # REPLACE THIS with your 32-character ID
 
 jobs:
   build-and-release:
