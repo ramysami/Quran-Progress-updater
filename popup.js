@@ -158,12 +158,31 @@ function showStatus(msg, type = '') {
     statusDiv.className = 'status-msg ' + type;
 }
 
-function openOptions() {
-    if (chrome.runtime.openOptionsPage) {
-        chrome.runtime.openOptionsPage();
+async function openOptions() {
+    // 1. Try the standard API first
+    if (typeof chrome.runtime.openOptionsPage === 'function') {
+        chrome.runtime.openOptionsPage((err) => {
+            // 2. If it fails or throws an error (common in some forks), fallback to tabs
+            if (chrome.runtime.lastError || err) {
+                fallbackOpenOptions();
+            }
+        });
     } else {
-        window.open(chrome.runtime.getURL('options.html'));
+        fallbackOpenOptions();
     }
+}
+
+function fallbackOpenOptions() {
+    const optionsUrl = chrome.runtime.getURL('options.html');
+    
+    // Check if an options tab is already open to avoid duplicating tabs
+    chrome.tabs.query({ url: optionsUrl }, (tabs) => {
+        if (tabs.length > 0) {
+            chrome.tabs.update(tabs[0].id, { active: true });
+        } else {
+            chrome.tabs.create({ url: optionsUrl });
+        }
+    });
 }
 
 goToOptionsBtn.addEventListener('click', openOptions);
