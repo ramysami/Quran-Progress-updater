@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Quran Progress Updater",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "update_url": "https://ramysami.github.io/Quran-Progress-updater/updates.xml",
   "description": "Select Quran Ayah and update Todoist with detailed metadata.",
   "permissions": [
